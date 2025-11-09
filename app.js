@@ -1,87 +1,70 @@
+// Importacion de modulos base
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var session = require('express-session');
+require('dotenv').config(); // para leer variables de entorno
 
-require('dotenv').config();
+// Conexion a la base de datos
 var pool = require('./models/bd');
 
+// Importación de rutas
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var loginRouter = require('./routes/admin/login');
+var panelRouter = require('./routes/admin/panel');
+var logoutRouter = require('./routes/admin/logout');
 
+
+// Configuracion inicial de la app
 var app = express();
 
-// view engine setup
+// Motor de plantillas (Handlebars)
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'hbs');
 
+// Middlewares base
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Configuracion de sesion
+
+app.use(session({
+  secret: '1234',          // clave para la sesion
+  resave: false,           // no guardar si no hubo cambios
+  saveUninitialized: true  // guardar aunque este vacia
+}));
+
+
+// Uso de rutas
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/admin/login', loginRouter);
+app.use('/admin/panel', panelRouter);
+app.use('/admin/logout', logoutRouter);
 
-// SELECT
-
-// pool.query('select nombre, edad from empleados').then(function(resultados){
-//   console.log(resultados)
-// })
-// insert
-// var obj = {
-//    nombre: 'lautaro',
-//    apellido: 'lopez',
-//    trabajo: 'docente',
-//    edad: 20,
-//    salario: 3000,
-//    mail: 'lllll@gmail.com'
-// }
-
-// pool.query('insert into empleados set ?', [obj]).then(function(resultados){
-//  console.log(resultados) })
-
-//  var obj2 = {
-//    id: 22,
-//    nombre: 'lautasassasaro',
-//    apellido: 'lopsaez',
-//    trabajo: 'docenhte',
-//    edad: 21,
-//    salario: 30000,
-//    mail: 'llllll@gmail.com'
-// }
-// pool.query('insert into empleados set ?', [obj2]).then(function(resultadoss){
-//  console.log(resultadoss) })
-// modificar
-  // var id = 22
-  // var obj = {
-  //   nombre: 'Benjamin',
-  //   apellido: 'Alvarez',
-  // }
-  // pool.query('update empleados set ? where id=?', [obj, id]).then(function(resultado){
-  //   console.log(resultado)
-  // })
-var id = 22;
-pool.query('delete from empleados where id=?', [id]).then(function(resultado){
-  console.log(resultado);
-})
+// Manejo de errores
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
+app.use(function (err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+// renderiza la página de error
   res.status(err.status || 500);
   res.render('error');
 });
+
 
 module.exports = app;

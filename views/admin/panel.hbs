@@ -1,0 +1,37 @@
+<div class="panel-container">
+  <h2>Bienvenido, {{nombre}}</h2>
+  <p>Has iniciado sesión correctamente.</p>
+
+  <form action="/admin/logout" method="post">
+    <button type="submit">Cerrar sesión</button>
+  </form>
+</div>
+
+<style>
+  .panel-container {
+    width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    text-align: center;
+  }
+
+  h2 {
+    margin-bottom: 20px;
+  }
+
+  button {
+    padding: 10px 20px;
+    background: #222;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background: #444;
+  }
+</style>
